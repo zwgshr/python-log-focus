@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
 
     steps:
       - name: Checkout Code
@@ -19,8 +22,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -42,18 +43,14 @@ jobs:
           echo "Found VSIX package: ${VSIX_FILE}"
 
       - name: Publish to VS Code Marketplace
-        if: ${{ secrets.VSCE_PAT != '' }}
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        if: env.VSCE_PAT != ''
         run: |
-          npx @vscode/vsce publish --packagePath "${{ env.VSIX_FILE }}" --skip-duplicate -p "${{ secrets.VSCE_PAT }}"
+          npx @vscode/vsce publish --packagePath "${{ env.VSIX_FILE }}" --skip-duplicate -p "${{ env.VSCE_PAT }}"
 
       - name: Publish to Open VSX Registry
-        if: ${{ secrets.OVSX_PAT != '' }}
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        if: env.OVSX_PAT != ''
         run: |
-          npx ovsx publish "${{ env.VSIX_FILE }}" --skip-duplicate -p "${{ secrets.OVSX_PAT }}"
+          npx ovsx publish "${{ env.VSIX_FILE }}" --skip-duplicate -p "${{ env.OVSX_PAT }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
