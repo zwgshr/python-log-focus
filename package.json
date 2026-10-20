@@ -193,6 +193,7 @@
   "scripts": {
     "vscode:prepublish": "npm run build",
     "compile": "tsc -p ./",
+    "typecheck": "tsc -p ./ --noEmit",
     "watch": "tsc -watch -p ./",
     "build": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --minify",
     "build:dev": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
@@ -218,5 +219,6 @@
     "url": "https://github.com/zwgshr/python-log-focus/issues"
   },
   "homepage": "https://github.com/zwgshr/python-log-focus#readme",
-  "author": "zwgshr"
+  "author": "zwgshr",
+  "packageManager": "pnpm@12.5.1"
 }

@@ -62,6 +62,10 @@ export class LogDecorator {
     }
   }
 
+  public getConfig(): PluginConfig {
+    return this.config;
+  }
+
   public clearCache(): void {
     this.cachedItemsMap = new WeakMap();
   }

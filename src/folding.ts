@@ -9,7 +9,7 @@ export class PythonLogFoldingProvider implements vscode.FoldingRangeProvider {
     _context: vscode.FoldingContext,
     _token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.FoldingRange[]> {
-    if (document.languageId !== 'python') {
+    if (document.languageId !== 'python' || !this.decorator.getConfig().multilineFolding) {
       return [];
     }
 

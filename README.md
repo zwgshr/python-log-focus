@@ -4,6 +4,12 @@
   <img src="assets/icon.png" width="128" height="128" alt="Python Log Focus Logo" />
 </p>
 
+<p align="center">
+  <a href="https://github.com/zwgshr/python-log-focus/actions/workflows/ci.yml"><img src="https://github.com/zwgshr/python-log-focus/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=zwgshr.python-log-focus"><img src="https://img.shields.io/visual-studio-marketplace/v/zwgshr.python-log-focus?color=blue&label=VS%20Code%20Marketplace" alt="Marketplace Version" /></a>
+  <a href="https://github.com/zwgshr/python-log-focus/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License" /></a>
+</p>
+
 一款专为 Python 开发者打造的 VS Code 扩展。智能识别代码中的 `logger.info(...)`、`logging`、`loguru`、`self.logger`、`structlog` 等日志调用，提供**视觉淡化 (Dim)**、**内联遮罩 (Mask)** 与**跨行折叠 (Fold)** 功能，消除日志视觉噪音，让你专注于核心业务逻辑。
 
 ---

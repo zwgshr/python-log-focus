@@ -84,6 +84,7 @@ export function activate(context: vscode.ExtensionContext): void {
   async function foldAllMultilineLogs(editor?: vscode.TextEditor): Promise<number> {
     const targetEditor = editor || vscode.window.activeTextEditor;
     if (!targetEditor || targetEditor.document.languageId !== 'python') return 0;
+    if (targetEditor !== vscode.window.activeTextEditor) return 0;
 
     const items = decorator.getLogItems(targetEditor.document);
     const multilineLines = items.filter(it => it.isMultiline).map(it => it.startLine);
@@ -103,6 +104,7 @@ export function activate(context: vscode.ExtensionContext): void {
   async function unfoldAllMultilineLogs(editor?: vscode.TextEditor): Promise<number> {
     const targetEditor = editor || vscode.window.activeTextEditor;
     if (!targetEditor || targetEditor.document.languageId !== 'python') return 0;
+    if (targetEditor !== vscode.window.activeTextEditor) return 0;
 
     const items = decorator.getLogItems(targetEditor.document);
     const multilineLines = items.filter(it => it.isMultiline).map(it => it.startLine);
@@ -251,14 +253,12 @@ export function activate(context: vscode.ExtensionContext): void {
     decorator
   );
 
-  // Folding Provider
-  if (config.multilineFolding) {
-    const foldingProvider = vscode.languages.registerFoldingRangeProvider(
-      'python',
-      new PythonLogFoldingProvider(decorator)
-    );
-    context.subscriptions.push(foldingProvider);
-  }
+  // Folding Provider (dynamically queries decorator.getConfig().multilineFolding)
+  const foldingProvider = vscode.languages.registerFoldingRangeProvider(
+    'python',
+    new PythonLogFoldingProvider(decorator)
+  );
+  context.subscriptions.push(foldingProvider);
 
   // Active editor change
   context.subscriptions.push(

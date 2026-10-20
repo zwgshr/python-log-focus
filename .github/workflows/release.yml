@@ -42,14 +42,14 @@ jobs:
           echo "Found VSIX package: ${VSIX_FILE}"
 
       - name: Publish to VS Code Marketplace
-        if: env.VSCE_PAT != ''
+        if: ${{ secrets.VSCE_PAT != '' }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: |
           npx @vscode/vsce publish --packagePath "${{ env.VSIX_FILE }}" --skip-duplicate -p "${{ secrets.VSCE_PAT }}"
 
       - name: Publish to Open VSX Registry
-        if: env.OVSX_PAT != ''
+        if: ${{ secrets.OVSX_PAT != '' }}
         env:
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: |
