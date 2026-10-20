@@ -1,0 +1,156 @@
+import fs from 'fs';
+import path from 'path';
+import { Resvg } from '@resvg/resvg-js';
+
+/**
+ * Python Log Focus — official extension icon generator (Flush-to-Edge Edition).
+ *
+ * Design Optimization:
+ * --------------------
+ * - Viewfinder Brackets Flush to Edges: Inset by 5px (with 6px stroke) so the
+ *   outer perimeter spans the full 256x256 canvas without clipping.
+ *   In VS Code's 42x42 extension sidebar, the 4 corner marks anchor to the exact
+ *   corners, making the icon feel 100% full-sized.
+ * - Hero Elements Maximized: Pill expanded to 236px width x 76px height (92% canvas width).
+ *   The eye glyph, brackets [ ··· ], and focus reticle are bold and crisp even at 16px/32px.
+ * - Code lines expanded across the width (216px) to eliminate dead vertical whitespace.
+ * - 100% Transparent Background: Adapts to both light and dark themes.
+ * - Dual-Theme Contrast Engineering:
+ *   - Python Blue: #0284C7 (deep azure) -> #38BDF8 (electric cyan)
+ *   - Python Gold: #D97706 (deep amber) -> #FBBF24 (golden yellow)
+ *   - Enclosed dark slate glass capsule ensures 100% contrast on any background.
+ */
+
+export const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <!-- Python Blue for brackets -->
+    <linearGradient id="bracketBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+
+    <!-- Python Gold for brackets -->
+    <linearGradient id="bracketGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+
+    <!-- Pill Rim Gradient -->
+    <linearGradient id="pillRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+
+    <!-- Glass Pill Fill -->
+    <linearGradient id="pillFill" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0A0F1D"/>
+    </linearGradient>
+
+    <!-- Universal Drop Shadow for light theme contrast -->
+    <filter id="shadowLight" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+
+    <!-- Hero Pill Elevation Shadow -->
+    <filter id="shadowPill" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- 100% TRANSPARENT CANVAS -->
+
+  <!-- Viewfinder Perimeter Corner Brackets (FLUSH TO EDGES: Inset by 5px with 6px stroke) -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" filter="url(#shadowLight)">
+    <!-- Top-Left & Bottom-Left (Python Blue: Arm length 46px) -->
+    <path d="M 50 6 L 6 6 L 6 50" stroke="url(#bracketBlue)"/>
+    <path d="M 50 250 L 6 250 L 6 206" stroke="url(#bracketBlue)"/>
+
+    <!-- Top-Right & Bottom-Right (Python Gold: Arm length 46px) -->
+    <path d="M 206 6 L 250 6 L 250 50" stroke="url(#bracketGold)"/>
+    <path d="M 206 250 L 250 250 L 250 206" stroke="url(#bracketGold)"/>
+  </g>
+
+  <!-- Code Syntax Stream (Maximized width) -->
+  <!-- Line 1: Active Business Logic -->
+  <g transform="translate(20, 22)" filter="url(#shadowLight)">
+    <rect x="0" y="0" width="44" height="8" rx="4" fill="#0284C7"/>
+    <rect x="52" y="0" width="105" height="8" rx="4" fill="#D97706"/>
+    <rect x="165" y="0" width="51" height="8" rx="4" fill="#64748B"/>
+  </g>
+
+  <!-- Line 2: Dimmed Log Statement 1 (opacity 0.35) -->
+  <g transform="translate(40, 54)" opacity="0.35" fill="#64748B">
+    <rect x="0" y="0" width="76" height="7" rx="3.5"/>
+    <rect x="85" y="0" width="115" height="7" rx="3.5"/>
+  </g>
+
+  <!-- Line 3: THE HERO MASK PILL [ 👁️ · · · ] (Expanded to 236px width x 76px height, centered at y=90) -->
+  <g transform="translate(10, 90)" filter="url(#shadowPill)">
+    <!-- Pill Container -->
+    <rect x="0" y="0" width="236" height="76" rx="38" fill="url(#pillFill)" stroke="url(#pillRim)" stroke-width="2.6"/>
+
+    <!-- Left: Eye of Focus Icon in Python Blue (centered at y=38) -->
+    <g transform="translate(26, 21)" stroke="#38BDF8" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 0 17 C 7 5, 25 5, 32 17 C 25 29, 7 29, 0 17 Z"/>
+      <circle cx="16" cy="17" r="5.2" fill="#38BDF8"/>
+      <circle cx="16" cy="17" r="2" fill="#FFFFFF"/>
+    </g>
+
+    <!-- Center: The Code Folding Badge [ · · · ] (centered at y=38) -->
+    <g transform="translate(84, 21)">
+      <!-- Left Bracket (Python Blue) -->
+      <path d="M 8 4 L 1 4 L 1 30 L 8 30" stroke="#38BDF8" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+      
+      <!-- Folded dots ··· (Glowing Python Gold) -->
+      <circle cx="24" cy="17" r="4.5" fill="#FBBF24"/>
+      <circle cx="41" cy="17" r="4.5" fill="#FDE047"/>
+      <circle cx="58" cy="17" r="4.5" fill="#FBBF24"/>
+
+      <!-- Right Bracket (Python Gold) -->
+      <path d="M 74 4 L 81 4 L 81 30 L 74 30" stroke="#FBBF24" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <!-- Right: Focus Target Mini Glyph -->
+    <g transform="translate(182, 23)" stroke="#FBBF24" stroke-width="2.4" fill="none" stroke-linecap="round">
+      <circle cx="15" cy="15" r="12" stroke-dasharray="3.8 3.8"/>
+      <circle cx="15" cy="15" r="3.2" fill="#FBBF24"/>
+    </g>
+  </g>
+
+  <!-- Line 4: Dimmed Log Statement 2 (opacity 0.35) -->
+  <g transform="translate(40, 195)" opacity="0.35" fill="#64748B">
+    <rect x="0" y="0" width="90" height="7" rx="3.5"/>
+    <rect x="98" y="0" width="90" height="7" rx="3.5"/>
+  </g>
+
+  <!-- Line 5: Active Business Logic -->
+  <g transform="translate(20, 226)" filter="url(#shadowLight)">
+    <rect x="0" y="0" width="58" height="8" rx="4" fill="#0284C7"/>
+    <rect x="66" y="0" width="138" height="8" rx="4" fill="#D97706"/>
+  </g>
+</svg>`;
+
+async function main() {
+  const assetsDir = path.resolve('assets');
+  if (!fs.existsSync(assetsDir)) {
+    fs.mkdirSync(assetsDir, { recursive: true });
+  }
+
+  const svgPath = path.join(assetsDir, 'icon.svg');
+  const pngPath = path.join(assetsDir, 'icon.png');
+
+  fs.writeFileSync(svgPath, iconSvg, 'utf8');
+
+  const resvg = new Resvg(iconSvg, {
+    fitTo: { mode: 'width', value: 256 },
+  });
+  const pngData = resvg.render();
+  const pngBuffer = pngData.asPng();
+
+  fs.writeFileSync(pngPath, pngBuffer);
+  console.log(`Generated official flush-to-edge icon: ${pngPath} (${pngBuffer.length} bytes)`);
+}
+
+main().catch(console.error);

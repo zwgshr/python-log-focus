@@ -1,0 +1,222 @@
+{
+  "name": "python-log-focus",
+  "displayName": "Python Log Focus",
+  "description": "Dim, mask and fold Python logger calls (logger.info, logging, loguru, etc.) to keep focus on core business logic.",
+  "version": "0.1.0",
+  "publisher": "zwgshr",
+  "icon": "assets/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "python",
+    "logger",
+    "logging",
+    "focus",
+    "dim",
+    "fold",
+    "mask",
+    "clean-code"
+  ],
+  "activationEvents": [
+    "onLanguage:python"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pythonLogFocus.switchMode",
+        "title": "Python Log: Switch Display Mode",
+        "category": "Python Log"
+      },
+      {
+        "command": "pythonLogFocus.toggleDim",
+        "title": "Python Log: Toggle Dim Mode",
+        "category": "Python Log"
+      },
+      {
+        "command": "pythonLogFocus.toggleMask",
+        "title": "Python Log: Toggle Mask Mode",
+        "category": "Python Log"
+      },
+      {
+        "command": "pythonLogFocus.cycleMode",
+        "title": "Python Log: Cycle Mode (Dim -> Mask -> Off)",
+        "category": "Python Log"
+      },
+      {
+        "command": "pythonLogFocus.foldAllLogs",
+        "title": "Python Log: Fold All Multiline Logs",
+        "category": "Python Log"
+      },
+      {
+        "command": "pythonLogFocus.unfoldAllLogs",
+        "title": "Python Log: Unfold All Multiline Logs",
+        "category": "Python Log"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "pythonLogFocus.cycleMode",
+        "key": "alt+l",
+        "mac": "alt+l",
+        "when": "editorTextFocus && editorLangId == python"
+      }
+    ],
+    "configuration": {
+      "title": "Python Log Focus",
+      "properties": {
+        "pythonLogFocus.mode": {
+          "type": "string",
+          "enum": [
+            "dim",
+            "mask",
+            "off"
+          ],
+          "enumDescriptions": [
+            "视觉淡化：将日志代码降低对比度/半透明显示，保持代码结构同时突出主要逻辑",
+            "内联遮罩：将日志语句收起为紧凑占位符，极简代码空间",
+            "关闭：正常显示，不应用任何样式"
+          ],
+          "default": "dim",
+          "description": "当前日志显示模式 (dim: 视觉淡化, mask: 内联遮罩, off: 关闭)"
+        },
+        "pythonLogFocus.opacity": {
+          "type": "number",
+          "default": 0.35,
+          "minimum": 0.05,
+          "maximum": 0.95,
+          "description": "全局日志半透明度 (0.05 - 0.95，越小越淡，默认 0.35，同时作用于 Dim 与 Mask 模式)"
+        },
+        "pythonLogFocus.color": {
+          "type": "string",
+          "default": "",
+          "description": "自定义日志文字颜色（留空则基于当前主题和 opacity 自动半透明）"
+        },
+        "pythonLogFocus.italic": {
+          "type": "boolean",
+          "default": false,
+          "description": "是否将日志文字设为斜体"
+        },
+        "pythonLogFocus.unfoldOnCursor": {
+          "type": "boolean",
+          "default": true,
+          "description": "当光标移动到日志所在行时，自动临时恢复 100% 完整正常显示，方便查看和编辑"
+        },
+        "pythonLogFocus.maskStyle": {
+          "type": "string",
+          "enum": [
+            "badge",
+            "compact"
+          ],
+          "enumDescriptions": [
+            "占位徽章 (默认)：将日志整条替换为紧凑占位符，例如 [▸ Order processed]",
+            "紧凑调用：保留 logger.info( 前缀，仅将参数折叠为 …"
+          ],
+          "default": "badge",
+          "description": "遮罩模式的基础占位风格"
+        },
+        "pythonLogFocus.maskIcon": {
+          "type": "string",
+          "enum": [
+            "emoji",
+            "geometric",
+            "subtle",
+            "ascii",
+            "none",
+            "custom"
+          ],
+          "enumDescriptions": [
+            "彩色标准表情 (默认)：生动醒目，一眼可知严重等级 (ℹ️ 🐛 ✨ ⚠️ ❌ 🚨)",
+            "极简几何微符：等宽精致，不破坏字体排版 (▸ ⌕ ◆ ▲ ✖ ✦)",
+            "素雅工具表情：低调克制的工作流质感 (💬 🔧 ✅ ⚡ 🛑 💥)",
+            "纯终端代码字符：纯 ASCII 原生代码字符 (i ? v ! x *)",
+            "无图标：完全不显示任何图标",
+            "自定义字符：启用下方 maskCustomIcon 设置的自定义字符"
+          ],
+          "default": "emoji",
+          "description": "遮罩图标风格策略（下拉选择自适应主题、关闭或使用自定义图标）"
+        },
+        "pythonLogFocus.maskCustomIcon": {
+          "type": "string",
+          "default": "",
+          "description": "当 maskIcon 选择 'custom' 时生效的自定义图标字符（例如 '›', '▸', '🪵', '•'，留空时默认使用 '▸'）"
+        },
+        "pythonLogFocus.maskShowLevel": {
+          "type": "boolean",
+          "default": false,
+          "description": "遮罩中是否显示日志级别文本（如 'debug:', 'info:'；默认 false 直接消除冗余，呈现为 [⌕ Order validation passed]）"
+        },
+        "pythonLogFocus.maskShowBracket": {
+          "type": "boolean",
+          "default": true,
+          "description": "遮罩占位符中是否显示外层方括号 (如 [...])"
+        },
+        "pythonLogFocus.maskShowBackground": {
+          "type": "boolean",
+          "default": false,
+          "description": "遮罩占位符是否显示微透半透明胶囊底色与边框（默认 false 为纯净无底色）"
+        },
+        "pythonLogFocus.multilineFolding": {
+          "type": "boolean",
+          "default": true,
+          "description": "跨行多行日志折叠支持（提供代码折叠区域，并在 mask 模式下自动物理折叠以消除空行）"
+        },
+        "pythonLogFocus.customLoggers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "自定义附加 logger 变量/前缀（默认已支持 logger, logging, log, self.logger, self._logger, cls.logger, _logger, LOGGER, LOG, loguru.logger, loguru_logger, current_app.logger, structlog 等）"
+        },
+        "pythonLogFocus.customLevels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "自定义附加日志方法名（默认已全面支持 Loguru 及标准库：trace, debug, info, success, warning, warn, error, critical, fatal, exception, log）"
+        },
+        "pythonLogFocus.showStatusBarItem": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否在右下角状态栏显示当前模式并支持一键切换"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --minify",
+    "build:dev": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "generate:icon": "tsx scripts/generate-icon.ts",
+    "package": "vsce package --no-dependencies --baseContentUrl https://github.com/zwgshr/python-log-focus/raw/main/ --baseImagesUrl https://github.com/zwgshr/python-log-focus/raw/main/"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^20.11.24",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.20.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zwgshr/python-log-focus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zwgshr/python-log-focus/issues"
+  },
+  "homepage": "https://github.com/zwgshr/python-log-focus#readme",
+  "author": "zwgshr"
+}
